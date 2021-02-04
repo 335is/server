@@ -1,6 +1,6 @@
 ---
-# web server
-server:
+# http web server
+http:
    address: http://localhost
    port: 2000
    content: content

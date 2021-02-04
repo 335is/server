@@ -8,20 +8,19 @@ import (
 
 	"github.com/335is/config"
 	"github.com/335is/log"
-	uuid "github.com/satori/go.uuid"
-
 	"github.com/335is/server/internal/router"
+	uuid "github.com/satori/go.uuid"
 )
 
-// Config holds our configuration
-type Config struct {
-	Server Server `yaml:"server"`
+type cfg struct {
+	HTTP http
 }
 
-// Server holds web server configuration
-//	SERVER_SERVER_ADDRESS
-//	SERVER_SERVER_PORT
-type Server struct {
+// HTTP holds web server configuration
+//	SERVER_HTTP_ADDRESS
+//	SERVER_HTTP_PORT
+//	SERVER_HTTP_CONTENT
+type http struct {
 	Address string `yaml:"address"`
 	Port    string `yaml:"port"`
 	Content string `yaml:"content"`
@@ -44,10 +43,10 @@ func init() {
 func main() {
 	log.Infof("Starting %s %s %s LOG_LEVEL=%s", appName, appVersion, appInstance, log.GetLevel().String())
 
-	c := Config{}
+	c := cfg{}
 	config.Load(appName, "", &c)
 
-	go router.ServeHTTP(c.Server.Port, c.Server.Content)
+	go router.ServeHTTP(c.HTTP.Port, c.HTTP.Content)
 
 	waitForExit()
 	log.Infof("Stopping %s %s %s", appName, appVersion, appInstance)
