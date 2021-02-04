@@ -2,4 +2,5 @@
 # web server
 server:
    address: http://localhost
-   port: 80
+   port: 2000
+   content: content

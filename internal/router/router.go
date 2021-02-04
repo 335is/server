@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/335is/log"
 	"github.com/335is/server/internal/data"
@@ -28,10 +30,15 @@ import (
 		/bands/{bandID}/year
 */
 
+var content string = ""
+
 // ServeHTTP is a blocking call the begins the web server
-func ServeHTTP(port string) {
+func ServeHTTP(port string, contentDir string) {
+	content = contentDir
+
 	r := mux.NewRouter().StrictSlash(true)
 	r.HandleFunc("/", Root)
+	r.HandleFunc("/favicon.ico", FavIconHandler)
 	r.HandleFunc("/bands", Bands)
 	r.HandleFunc("/bands/names", BandNames)
 	r.HandleFunc("/bands/{bandID}", Band)
@@ -58,6 +65,18 @@ func ServeHTTP(port string) {
 func Root(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	fmt.Fprintf(w, "Welcome to the band server.")
+}
+
+// FavIconHandler - servers the icon
+func FavIconHandler(w http.ResponseWriter, r *http.Request) {
+	path, err := os.Getwd()
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	p := filepath.Join(path, content, "favicon.ico")
+	http.ServeFile(w, r, p)
 }
 
 // Bands returns the list of bands

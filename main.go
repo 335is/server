@@ -24,6 +24,7 @@ type Config struct {
 type Server struct {
 	Address string `yaml:"address"`
 	Port    string `yaml:"port"`
+	Content string `yaml:"content"`
 }
 
 const (
@@ -46,11 +47,11 @@ func main() {
 	c := Config{}
 	config.Load(appName, "", &c)
 
-	router.ServeHTTP(c.Server.Port)
+	go router.ServeHTTP(c.Server.Port, c.Server.Content)
 
-	// waitForExit()
-	// log.Infof("Stopping %s %s %s", appName, appVersion, appInstance)
-	// log.Infof("Shutting down")
+	waitForExit()
+	log.Infof("Stopping %s %s %s", appName, appVersion, appInstance)
+	log.Infof("Shutting down")
 }
 
 func waitForExit() {
