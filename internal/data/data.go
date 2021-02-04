@@ -9,8 +9,8 @@ import (
 // Band lists the members, name, and other info
 type Band struct {
 	Name    string   `yaml:"name"`
-	Members []Member `yaml:"members"`
 	Year    int      `yaml:"year"`
+	Members []Member `yaml:"members"`
 }
 
 // Member describes a band member
@@ -31,256 +31,59 @@ var (
 )
 
 func init() {
-	beatles := Band{
-		Name: "Beatles",
-		Members: []Member{
-			{
-				Name: "John Lennon",
-				Instruments: []string{
-					"vocals",
-					"guitar",
-				},
-				Founder: true,
-				Current: false,
-			},
-			{
-				Name: "Paul McCartney",
-				Instruments: []string{
-					"vocals",
-					"bass",
-				},
-				Founder: true,
-				Current: false,
-			},
-			{
-				Name: "George Harrison",
-				Instruments: []string{
-					"vocals",
-					"guitar",
-				},
-				Founder: true,
-				Current: false,
-			},
-			{
-				Name: "Ringo Starr",
-				Instruments: []string{
-					"drums",
-					"vocals",
-				},
-				Founder: true,
-				Current: false,
-			},
-			{
-				Name: "Billy Preston",
-				Instruments: []string{
-					"keyboards",
-				},
-				Founder: false,
-				Current: false,
-			},
+	fullcircle := Band{"Full Circle", 1998,
+		[]Member{
+			{"SLT", []string{"vocals", "guitar", "bass", "keyboards"}, true, true},
+			{"DOB", []string{"vocals", "piano", "saxophone"}, true, true},
 		},
-		Year: 1957,
 	}
 
-	dishwalla := Band{
-		Name: "Dishwalla",
-		Members: []Member{
-			{
-				Name: "J.R. Richards",
-				Instruments: []string{
-					"vocals",
-					"guitar",
-				},
-				Founder: true,
-				Current: false,
-			},
-			{
-				Name: "Rodney Browning",
-				Instruments: []string{
-					"guitar",
-				},
-				Founder: true,
-				Current: true,
-			},
-			{
-				Name: "Scott Alexander",
-				Instruments: []string{
-					"bass",
-				},
-				Founder: true,
-				Current: true,
-			},
-			{
-				Name: "George Pendergast",
-				Instruments: []string{
-					"drums",
-				},
-				Founder: true,
-				Current: true,
-			},
-			{
-				Name: "Jim Wood",
-				Instruments: []string{
-					"keyboards",
-				},
-				Founder: false,
-				Current: false,
-			},
-			{
-				Name: "Pete Maloney",
-				Instruments: []string{
-					"drums",
-				},
-				Founder: false,
-				Current: false,
-			},
-			{
-				Name: "Justin Fox",
-				Instruments: []string{
-					"vocals",
-				},
-				Founder: false,
-				Current: true,
-			},
+	beatles := Band{"Beatles", 1957,
+		[]Member{
+			{"John Lennon", []string{"vocals", "guitar"}, true, false},
+			{"Paul McCartney", []string{"vocals", "bass"}, true, false},
+			{"George Harrison", []string{"vocals", "guitar"}, true, false},
+			{"Ringo Starr", []string{"drums", "vocals"}, true, false},
+			{"Billy Preston", []string{"keyboards"}, false, false},
 		},
-		Year: 1994,
 	}
 
-	eagles := Band{
-		Name: "Eagles",
-		Members: []Member{
-			{
-				Name: "Glenn Frey",
-				Instruments: []string{
-					"vocals",
-					"guitar",
-					"keyboards",
-				},
-				Founder: true,
-				Current: false,
-			},
-			{
-				Name: "Don Henley",
-				Instruments: []string{
-					"drums",
-					"vocals",
-					"guitar",
-				},
-				Founder: true,
-				Current: true,
-			},
-			{
-				Name: "Randy Meisner",
-				Instruments: []string{
-					"bass",
-					"vocals",
-					"guitar",
-				},
-				Founder: true,
-				Current: false,
-			},
-			{
-				Name: "Bernie Leadon",
-				Instruments: []string{
-					"guitar",
-					"vocals",
-					"pedal steel guitar",
-					"mandolin",
-				},
-				Founder: true,
-				Current: false,
-			},
-			{
-				Name: "Don Felder",
-				Instruments: []string{
-					"guitar",
-					"background vocals",
-					"pedal steel guitar",
-					"mandolin",
-				},
-				Founder: false,
-				Current: false,
-			},
-			{
-				Name: "Joe Walsh",
-				Instruments: []string{
-					"guitar",
-					"background vocals",
-					"keyboards",
-				},
-				Founder: false,
-				Current: true,
-			},
-			{
-				Name: "Timothy B. Schmit",
-				Instruments: []string{
-					"bass",
-					"vocals",
-				},
-				Founder: false,
-				Current: true,
-			},
+	dishwalla := Band{"Dishwalla", 1994,
+		[]Member{
+			{"J.R. Richards", []string{"vocals", "guitar"}, true, false},
+			{"Rodney Browning", []string{"guitar"}, true, true},
+			{"Scot Alexander", []string{"bass"}, true, true},
+			{"George Pendergast", []string{"drums"}, true, true},
+			{"Jim Wood", []string{"keyboards"}, false, false},
+			{"Pete Maloney", []string{"drums"}, false, false},
+			{"Justin Fox", []string{"vocals"}, false, true},
 		},
-		Year: 1971,
 	}
 
-	stp := Band{
-		Name: "Stone Temple Pilots",
-		Members: []Member{
-			{
-				Name: "Scott Weiland",
-				Instruments: []string{
-					"vocals",
-				},
-				Founder: true,
-				Current: false,
-			},
-			{
-				Name: "Dean DeLeo",
-				Instruments: []string{
-					"guitar",
-				},
-				Founder: true,
-				Current: true,
-			},
-			{
-				Name: "Robert DeLeo",
-				Instruments: []string{
-					"bass",
-					"vocals",
-				},
-				Founder: true,
-				Current: true,
-			},
-			{
-				Name: "Eric Kretz",
-				Instruments: []string{
-					"drums",
-				},
-				Founder: true,
-				Current: true,
-			},
-			{
-				Name: "Chester Bennington",
-				Instruments: []string{
-					"vocals",
-				},
-				Founder: false,
-				Current: false,
-			},
-			{
-				Name: "Jeff Gutt",
-				Instruments: []string{
-					"vocals",
-				},
-				Founder: false,
-				Current: true,
-			},
+	eagles := Band{"Eagles", 1971,
+		[]Member{
+			{"Glenn Frey", []string{"vocals", "guitar", "keyboards"}, true, false},
+			{"Don Henley", []string{"drums", "vocals", "guitar"}, true, true},
+			{"Randy Meisner", []string{"bass", "vocals", "guitar"}, true, false},
+			{"Bernie Leadon", []string{"guitar", "vocals", "pedal steel guitar", "mandolin"}, true, false},
+			{"Don Felder", []string{"guitar", "pedal steel guitar", "mandolin", "background vocals"}, false, false},
+			{"Joe Walsh", []string{"guitar", "background vocals", "keyboards"}, false, true},
+			{"Timothy B. Schmit", []string{"bass", "vocals"}, false, true},
 		},
-		Year: 1989,
 	}
 
-	bands = append(bands, beatles, dishwalla, eagles, stp)
+	stp := Band{"Stone Temple Pilots", 1989,
+		[]Member{
+			{"Scott Weiland", []string{"vocals"}, true, false},
+			{"Robert DeLeo", []string{"bass", "vocals"}, true, true},
+			{"Dean DeLeo", []string{"guitar"}, true, true},
+			{"Eric Kretz", []string{"drums"}, true, true},
+			{"Chester Bennington", []string{"vocals"}, false, false},
+			{"Jeff Gutt", []string{"vocals"}, false, true},
+		},
+	}
+
+	bands = append(bands, fullcircle, beatles, dishwalla, eagles, stp)
 }
 
 // GetBands returns a list of bands with all their info

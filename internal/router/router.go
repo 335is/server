@@ -30,7 +30,7 @@ import (
 
 // ServeHTTP is a blocking call the begins the web server
 func ServeHTTP(port string) {
-	r := mux.NewRouter()
+	r := mux.NewRouter().StrictSlash(true)
 	r.HandleFunc("/", Root)
 	r.HandleFunc("/bands", Bands)
 	r.HandleFunc("/bands/names", BandNames)
