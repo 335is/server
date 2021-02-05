@@ -8,17 +8,17 @@ import (
 
 // Band lists the members, name, and other info
 type Band struct {
-	Name    string   `yaml:"name"`
-	Year    int      `yaml:"year"`
-	Members []Member `yaml:"members"`
+	Name    string
+	Year    int
+	Members []Member
 }
 
 // Member describes a band member
 type Member struct {
-	Name        string   `yaml:"name"`
-	Instruments []string `yaml:"instruments"`
-	Founder     bool     `yaml:"founder"`
-	Current     bool     `yaml:"current"`
+	Name        string
+	Instruments []string
+	Founder     bool
+	Current     bool
 }
 
 var (

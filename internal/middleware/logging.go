@@ -1,8 +1,7 @@
-package router
+package middleware
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/335is/log"
 )
@@ -25,10 +24,8 @@ func (rw *responseWriter) WriteHeader(code int) {
 // LoggingMiddleware is middleware that logs each request, even ones that don't match a route
 func LoggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
 		wrapped := &responseWriter{w, http.StatusOK}
 		next.ServeHTTP(wrapped, r)
-		dur := time.Since(start)
-		log.Infof("HTTP request method=%s host=%s URI=%s remote=%s status=%d duration=%s", r.Method, r.Host, r.RequestURI, r.RemoteAddr, wrapped.status, dur.String())
+		log.Infof("HTTP request method=%s host=%s URI=%s remote=%s status=%d", r.Method, r.Host, r.RequestURI, r.RemoteAddr, wrapped.status)
 	})
 }

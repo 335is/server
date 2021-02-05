@@ -9,6 +9,8 @@ import (
 
 	"github.com/335is/log"
 	"github.com/335is/server/internal/data"
+	"github.com/335is/server/internal/metrics"
+	"github.com/335is/server/internal/middleware"
 	"github.com/gorilla/mux"
 )
 
@@ -39,6 +41,7 @@ func ServeHTTP(port string, contentDir string) {
 	r := mux.NewRouter().StrictSlash(true)
 	r.HandleFunc("/", Root)
 	r.HandleFunc("/favicon.ico", FavIconHandler)
+	r.HandleFunc("/metrics", MetricsHandler)
 	r.HandleFunc("/bands", Bands)
 	r.HandleFunc("/bands/names", BandNames)
 	r.HandleFunc("/bands/{bandID}", Band)
@@ -55,7 +58,7 @@ func ServeHTTP(port string, contentDir string) {
 	p := ":" + port
 	log.Infof("HTTP server listening on %s", p)
 
-	http.ListenAndServe(p, LoggingMiddleware(r))
+	http.ListenAndServe(p, middleware.MetricsMiddleware(middleware.LoggingMiddleware(r)))
 }
 
 // API route handlers
@@ -67,7 +70,7 @@ func Root(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to the band server.")
 }
 
-// FavIconHandler - servers the icon
+// FavIconHandler - server up the browser icon
 func FavIconHandler(w http.ResponseWriter, r *http.Request) {
 	path, err := os.Getwd()
 	if err != nil {
@@ -77,6 +80,12 @@ func FavIconHandler(w http.ResponseWriter, r *http.Request) {
 
 	p := filepath.Join(path, content, "favicon.ico")
 	http.ServeFile(w, r, p)
+}
+
+// MetricsHandler - displays accumulated metrics
+func MetricsHandler(w http.ResponseWriter, r *http.Request) {
+	metrics.CalculateStatistics()
+	serialize(metrics.Metrics, w)
 }
 
 // Bands returns the list of bands
