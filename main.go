@@ -45,12 +45,10 @@ func main() {
 
 	c := cfg{}
 	config.Load(appName, "", &c)
-
 	go router.ServeHTTP(c.HTTP.Port, c.HTTP.Content)
 
 	waitForExit()
 	log.Infof("Stopping %s %s %s", appName, appVersion, appInstance)
-	log.Infof("Shutting down")
 }
 
 func waitForExit() {

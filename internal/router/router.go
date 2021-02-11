@@ -14,25 +14,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
-/*
-	REST API
+// Example of a REST API that serves bands, members, instruments, etc.
 
-		/
-		/bands
-		/bands/names
-		/bands/{bandID}
-		/bands/{bandID}/name
-		/bands/{bandID}/members
-		/bands/{bandID}/members/{memberID}
-		/bands/{bandID}/members/{memberID}/name
-		/bands/{bandID}/members/{memberID}/instruments
-		/bands/{bandID}/members/{memberID}/instruments/{instrumentID}
-		/bands/{bandID}/members/{memberID}/founder
-		/bands/{bandID}/members/{memberID}/current
-		/bands/{bandID}/year
-*/
-
-var content string = ""
+var (
+	content string = ""
+)
 
 // ServeHTTP is a blocking call the begins the web server
 func ServeHTTP(port string, contentDir string) {
@@ -58,7 +44,7 @@ func ServeHTTP(port string, contentDir string) {
 	p := ":" + port
 	log.Infof("HTTP server listening on %s", p)
 
-	http.ListenAndServe(p, middleware.MetricsMiddleware(middleware.LoggingMiddleware(r)))
+	http.ListenAndServe(p, middleware.MetricsMiddleware(middleware.PanicMiddleware(middleware.LoggingMiddleware(r))))
 }
 
 // API route handlers
@@ -84,8 +70,8 @@ func FavIconHandler(w http.ResponseWriter, r *http.Request) {
 
 // MetricsHandler - displays accumulated metrics
 func MetricsHandler(w http.ResponseWriter, r *http.Request) {
-	metrics.CalculateStatistics()
-	serialize(metrics.Metrics, w)
+	stats := metrics.CalculateStatistics()
+	serialize(stats, w)
 }
 
 // Bands returns the list of bands

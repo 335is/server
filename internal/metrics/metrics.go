@@ -1,71 +1,94 @@
 package metrics
 
 import (
+	"sync"
 	"time"
 )
 
 // This bare bones metrics package accumulates and shares integer and duration values.
-// It is NOT thread safe.
-// It globally shares the metrics set.
 
-// Data holds the metrics and calculated statistics on the metrics
-type Data struct {
-	Integers           map[string]*[]int
-	Durations          map[string]*[]time.Duration
-	IntegerStatistics  map[string]IntegerStats
-	DurationStatistics map[string]DurationStats
+// Organization stores data about this service instance
+type Organization struct {
+	Region      string // US, EU, TW, CH
+	Datacenter  string // WEST, EAST, OC, LAX
+	Network     string // GARBOLIC, CENTRAL, DEPAK
+	Environment string // DEV, TEST, PROD
+	Hostname    string // SOLONAKER, DEEMSTAM
+	IPAddress   string // 10.25.28.17, 192.168.23.55
+	Service     string // GYMSNAPPER, TELEDIRK
+	Instance    string // A, B
 }
 
-// IntegerStats hold the statistics on the integer metrics
-type IntegerStats struct {
+// Statistics calculated
+type Statistics struct {
+	IntegerStats  map[string]IStats
+	DurationStats map[string]DStats
+}
+
+// IStats holds the statistics on the integer metrics
+type IStats struct {
 	Count   int
 	Mean    int
 	Maximum int
 	Minimum int
 }
 
-// DurationStats hold the statistics on the duration metrics
-type DurationStats struct {
+// DStats holds the statistics on the duration metrics
+type DStats struct {
 	Count   int
 	Mean    time.Duration
 	Maximum time.Duration
 	Minimum time.Duration
 }
 
+// Data holds the metrics and calculated statistics on the metrics
+type data struct {
+	integers  map[string]*[]int
+	durations map[string]*[]time.Duration
+}
+
 var (
 	// Metrics and calculated statistics are the accumulated values
-	Metrics = Data{
+	metrics = data{
 		map[string]*[]int{},
 		map[string]*[]time.Duration{},
-		map[string]IntegerStats{},
-		map[string]DurationStats{},
 	}
+	mutexIntegers  = &sync.Mutex{}
+	mutexDurations = &sync.Mutex{}
 )
 
 // AddInteger accumulates integer samples by label
 func AddInteger(label string, value int) {
-	if v, ok := Metrics.Integers[label]; ok {
+	mutexIntegers.Lock()
+	if v, ok := metrics.integers[label]; ok {
 		*v = append(*v, value)
 	} else {
-		Metrics.Integers[label] = &[]int{value}
+		metrics.integers[label] = &[]int{value}
 	}
+	mutexIntegers.Unlock()
 }
 
 // AddDuration accumulates time.Duration samples by label
 func AddDuration(label string, value time.Duration) {
-	if v, ok := Metrics.Durations[label]; ok {
+	mutexDurations.Lock()
+	if v, ok := metrics.durations[label]; ok {
 		*v = append(*v, value)
 	} else {
-		Metrics.Durations[label] = &[]time.Duration{value}
+		metrics.durations[label] = &[]time.Duration{value}
 	}
+	mutexDurations.Unlock()
 }
 
-// CalculateStatistics crunches the numbers
-func CalculateStatistics() {
-	Metrics.IntegerStatistics = map[string]IntegerStats{}
-	if len(Metrics.Integers) > 0 {
-		for k, v := range Metrics.Integers {
-			stats := IntegerStats{}
+// CalculateStatistics crunches the numbers and returns the stats
+func CalculateStatistics() Statistics {
+	stats := Statistics{
+		map[string]IStats{},
+		map[string]DStats{},
+	}
+
+	if len(metrics.integers) > 0 {
+		mutexIntegers.Lock()
+		for k, v := range metrics.integers {
 			sum := 0
 			max := 0
 			min := 0
@@ -83,18 +106,14 @@ func CalculateStatistics() {
 					}
 				}
 			}
-			stats.Count = len(*v)
-			stats.Mean = sum / len(*v)
-			stats.Maximum = max
-			stats.Minimum = min
-			Metrics.IntegerStatistics[k] = stats
+			stats.IntegerStats[k] = IStats{len(*v), sum / len(*v), max, min}
 		}
+		mutexIntegers.Unlock()
 	}
 
-	Metrics.DurationStatistics = map[string]DurationStats{}
-	if len(Metrics.Durations) > 0 {
-		for k, v := range Metrics.Durations {
-			stats := DurationStats{}
+	if len(metrics.durations) > 0 {
+		mutexDurations.Lock()
+		for k, v := range metrics.durations {
 			sum := time.Duration(0)
 			max := time.Duration(0)
 			min := time.Duration(0)
@@ -112,11 +131,10 @@ func CalculateStatistics() {
 					}
 				}
 			}
-			stats.Count = len(*v)
-			stats.Mean = sum / time.Duration(len(*v))
-			stats.Maximum = max
-			stats.Minimum = min
-			Metrics.DurationStatistics[k] = stats
+			stats.DurationStats[k] = DStats{len(*v), sum / time.Duration(len(*v)), max, min}
 		}
+		mutexDurations.Unlock()
 	}
+
+	return stats
 }
