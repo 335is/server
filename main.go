@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"runtime/pprof"
 	"syscall"
 
 	"github.com/335is/config"
@@ -13,7 +14,9 @@ import (
 )
 
 type cfg struct {
-	HTTP http
+	HTTP   http      `yaml:"http"`
+	CPU    profiling `yaml:"cpu"`
+	Memory profiling `yaml:"memory"`
 }
 
 // HTTP holds web server configuration
@@ -24,6 +27,11 @@ type http struct {
 	Address string `yaml:"address"`
 	Port    string `yaml:"port"`
 	Content string `yaml:"content"`
+}
+
+type profiling struct {
+	Enabled  bool   `yaml:"enabled"`
+	Filename string `yaml:"filename"`
 }
 
 const (
@@ -45,6 +53,31 @@ func main() {
 
 	c := cfg{}
 	config.Load(appName, "", &c)
+
+	// CPU profiling
+	if c.CPU.Enabled {
+		f, err := os.Create(c.CPU.Filename)
+		if err != nil {
+			log.Errorf(err.Error())
+		}
+
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
+
+	// Memory profiling
+	if c.Memory.Enabled {
+		f, err := os.Create(c.Memory.Filename)
+		if err != nil {
+			log.Errorf(err.Error())
+		}
+
+		defer func() {
+			pprof.WriteHeapProfile(f)
+			f.Close()
+		}()
+	}
+
 	go router.ServeHTTP(c.HTTP.Port, c.HTTP.Content)
 
 	waitForExit()

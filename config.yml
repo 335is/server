@@ -4,3 +4,9 @@ http:
    address: http://localhost
    port: 2000
    content: content
+cpu:
+   enabled: false
+   filename: server.pprof
+memory:
+   enabled: true
+   filename: server.mprof
