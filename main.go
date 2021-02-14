@@ -20,22 +20,27 @@ type cfg struct {
 }
 
 // HTTP holds web server configuration
-//	SERVER_HTTP_ADDRESS
-//	SERVER_HTTP_PORT
-//	SERVER_HTTP_CONTENT
+//	HTTP_ADDRESS
+//	HTTP_PORT
+//	HTTP_CONTENT
 type http struct {
 	Address string `yaml:"address"`
 	Port    string `yaml:"port"`
 	Content string `yaml:"content"`
 }
 
+// CPU and Memory profiling settings
+//	CPU_ENABLED
+//	CPU_FILENAME
+//	MEMORY_ENABLED
+//	MEMORY_FILENAME
 type profiling struct {
 	Enabled  bool   `yaml:"enabled"`
 	Filename string `yaml:"filename"`
 }
 
 const (
-	// AppName defines the prefix for any configuration environment variables, as in SERVER_HTTP_ADDRESS
+	// AppName defines the prefix for any configuration environment variables, as in HTTP_ADDRESS
 	appName    = "server"
 	appVersion = "0.0.1"
 )

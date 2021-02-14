@@ -4,9 +4,11 @@ http:
    address: http://localhost
    port: 2000
    content: content
+# CPU profiling
 cpu:
    enabled: false
-   filename: server.pprof
+   filename: cpu.pprof
+# memory profiling
 memory:
    enabled: true
-   filename: server.mprof
+   filename: memory.mprof

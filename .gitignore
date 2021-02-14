@@ -11,5 +11,8 @@ debug
 # Editors
 .vscode/
 
-# Env Files
+# environament variable Files
 .env
+
+# profiling Files
+.mprof
