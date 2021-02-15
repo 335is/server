@@ -15,4 +15,4 @@ debug
 .env
 
 # profiling Files
-.mprof
+*.mprof

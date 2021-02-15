@@ -21,40 +21,41 @@ var ()
 func main() {
 	base := address + port
 	paths := getPaths()
-
 	for {
-		makeCalls(base, paths, delay)
+		for _, path := range paths {
+			makeCall(base+path, delay)
+			time.Sleep(delay)
+		}
 	}
 }
 
-func makeCalls(base string, paths []string, delay time.Duration) {
-	for _, path := range paths {
-		p := base + path
-		req, err := http.NewRequest("GET", p, nil)
-		if err != nil {
-			fmt.Println(err.Error())
-			return
-		}
-
-		c := http.Client{}
-		start := time.Now()
-		resp, err := c.Do(req)
-		duration := time.Since(start)
-
-		if err != nil {
-			fmt.Println(err.Error())
-			return
-		}
-
-		if resp.StatusCode < 200 || resp.StatusCode > 299 {
-			fmt.Printf("HTTP status %d, %s\n", resp.StatusCode, http.StatusText(resp.StatusCode))
-			return
-		}
-
-		fmt.Printf("%10dms: %s\n", duration.Milliseconds(), p)
-
-		time.Sleep(delay)
+func makeCall(path string, delay time.Duration) {
+	req, err := http.NewRequest("GET", path, nil)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
 	}
+
+	c := http.Client{}
+	start := time.Now()
+	resp, err := c.Do(req)
+	duration := time.Since(start)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		fmt.Printf("HTTP status %d, %s\n", resp.StatusCode, http.StatusText(resp.StatusCode))
+		return
+	}
+
+	fmt.Printf("%10dms: %s\n", duration.Milliseconds(), path)
+
+	c.CloseIdleConnections()
 }
 
 // sneaky way to get a const slice of strings
