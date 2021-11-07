@@ -57,7 +57,7 @@ func main() {
 	log.Infof("Starting %s %s %s LOG_LEVEL=%s", appName, appVersion, appInstance, log.GetLevel().String())
 
 	c := cfg{}
-	config.Load(appName, "", &c)
+	config.Load("", &c)
 
 	// CPU profiling
 	if c.CPU.Enabled {
