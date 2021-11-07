@@ -9,7 +9,11 @@
             "type": "go",
             "request": "launch",
             "mode": "debug",
-            "program": "${workspaceFolder}/main.go"
+            "program": "${workspaceFolder}/main.go",
+            "env": {},
+            "args": [
+                "HTTP.Port=2000"
+            ]
         }
     ]
 }

@@ -2,21 +2,26 @@ package middleware
 
 import (
 	"net/http"
-	"path"
-	"time"
 
-	"github.com/335is/server/internal/metrics"
+	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+)
+
+var (
+	httpDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
+		Name: "server_http_duration_seconds",
+		Help: "Duration of HTTP requests.",
+	}, []string{"path"})
 )
 
 // MetricsMiddleware implements mux.MiddlewareFunc.
 func MetricsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
+		route := mux.CurrentRoute(r)
+		path, _ := route.GetPathTemplate()
+		timer := prometheus.NewTimer(httpDuration.WithLabelValues(path))
 		next.ServeHTTP(w, r)
-		value := time.Since(start)
-
-		label := r.Method + ":" + path.Join(r.RemoteAddr, r.RequestURI)
-		metrics.AddInteger(label, 1)
-		metrics.AddDuration(label, value)
+		timer.ObserveDuration()
 	})
 }

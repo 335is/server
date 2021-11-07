@@ -10,5 +10,5 @@ cpu:
    filename: cpu.pprof
 # memory profiling
 memory:
-   enabled: true
+   enabled: false
    filename: memory.mprof

@@ -3,15 +3,16 @@ package router
 import (
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
 
 	"github.com/335is/log"
 	"github.com/335is/server/internal/data"
-	"github.com/335is/server/internal/metrics"
 	"github.com/335is/server/internal/middleware"
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 // Example of a REST API that serves bands, members, instruments, etc.
@@ -24,10 +25,13 @@ var (
 func ServeHTTP(port string, contentDir string) {
 	content = contentDir
 
+	ip := getOutboundIP()
+
+	log.Infof("HTTP server listening on %s:%s", ip, port)
+
 	r := mux.NewRouter().StrictSlash(true)
 	r.HandleFunc("/", Root)
 	r.HandleFunc("/favicon.ico", FavIconHandler)
-	r.HandleFunc("/metrics", MetricsHandler)
 	r.HandleFunc("/bands", Bands)
 	r.HandleFunc("/bands/names", BandNames)
 	r.HandleFunc("/bands/{bandID}", Band)
@@ -40,11 +44,12 @@ func ServeHTTP(port string, contentDir string) {
 	r.HandleFunc("/bands/{bandID}/members/{memberID}/founder", BandMemberFounder)
 	r.HandleFunc("/bands/{bandID}/members/{memberID}/current", BandMemberCurrent)
 	r.HandleFunc("/bands/{bandID}/year", BandYear)
+	r.Path("/metrics").Handler(promhttp.Handler())
+	r.Use(middleware.PanicMiddleware)
+	r.Use(middleware.MetricsMiddleware)
+	r.Use(middleware.LoggingMiddleware)
 
-	p := ":" + port
-	log.Infof("HTTP server listening on %s", p)
-
-	http.ListenAndServe(p, middleware.MetricsMiddleware(middleware.PanicMiddleware(middleware.LoggingMiddleware(r))))
+	http.ListenAndServe(":"+port, r)
 }
 
 // API route handlers
@@ -66,12 +71,6 @@ func FavIconHandler(w http.ResponseWriter, r *http.Request) {
 
 	p := filepath.Join(path, content, "favicon.ico")
 	http.ServeFile(w, r, p)
-}
-
-// MetricsHandler - displays accumulated metrics
-func MetricsHandler(w http.ResponseWriter, r *http.Request) {
-	stats := metrics.CalculateStatistics()
-	serialize(stats, w)
 }
 
 // Bands returns the list of bands
@@ -268,4 +267,18 @@ func dumpHeader(h http.Header) {
 	for k, v := range h {
 		fmt.Printf("[%s]=%s", k, v)
 	}
+}
+
+// Gets the preferred outbound ip of this machine
+func getOutboundIP() string {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	defer conn.Close()
+
+	if err != nil {
+		return ""
+	}
+
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+
+	return localAddr.IP.String()
 }
