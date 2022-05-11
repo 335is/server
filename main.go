@@ -13,6 +13,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
+// top level config structure
 type cfg struct {
 	HTTP   http      `yaml:"http"`
 	CPU    profiling `yaml:"cpu"`
@@ -40,7 +41,6 @@ type profiling struct {
 }
 
 const (
-	// AppName defines the prefix for any configuration environment variables, as in HTTP_ADDRESS
 	appName    = "server"
 	appVersion = "0.0.1"
 )
@@ -84,8 +84,8 @@ func main() {
 	}
 
 	go router.ServeHTTP(c.HTTP.Port, c.HTTP.Content)
-
 	waitForExit()
+
 	log.Infof("Stopping %s %s %s", appName, appVersion, appInstance)
 }
 

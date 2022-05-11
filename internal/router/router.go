@@ -21,7 +21,8 @@ var (
 	content string = ""
 )
 
-// ServeHTTP is a blocking call the begins the web server
+// ServeHTTP is a blocking call thar starts the web server on the specified port
+// Default URL is http://localhost:80/
 func ServeHTTP(port string, contentDir string) {
 	content = contentDir
 
@@ -31,7 +32,7 @@ func ServeHTTP(port string, contentDir string) {
 
 	r := mux.NewRouter().StrictSlash(true)
 	r.HandleFunc("/", Root)
-	r.HandleFunc("/favicon.ico", FavIconHandler)
+	r.HandleFunc("/favicon.ico", FavIcon)
 	r.HandleFunc("/bands", Bands)
 	r.HandleFunc("/bands/names", BandNames)
 	r.HandleFunc("/bands/{bandID}", Band)
@@ -55,14 +56,13 @@ func ServeHTTP(port string, contentDir string) {
 // API route handlers
 
 // Root handles requests to the root page
-// http://localhost:80/
 func Root(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	fmt.Fprintf(w, "Welcome to the band server.")
 }
 
-// FavIconHandler - server up the browser icon
-func FavIconHandler(w http.ResponseWriter, r *http.Request) {
+// FavIcon - serve up the browser icon
+func FavIcon(w http.ResponseWriter, r *http.Request) {
 	path, err := os.Getwd()
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
