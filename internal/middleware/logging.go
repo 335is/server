@@ -17,8 +17,6 @@ type responseWriter struct {
 func (rw *responseWriter) WriteHeader(code int) {
 	rw.status = code
 	rw.ResponseWriter.WriteHeader(code)
-
-	return
 }
 
 // LoggingMiddleware is middleware that logs each request, even ones that don't match a route

@@ -46,6 +46,7 @@ func ServeHTTP(port string, contentDir string) {
 	r.HandleFunc("/bands/{bandID}/members/{memberID}/current", BandMemberCurrent)
 	r.HandleFunc("/bands/{bandID}/year", BandYear)
 	r.Path("/metrics").Handler(promhttp.Handler())
+	r.Use(middleware.AuthMiddleware)
 	r.Use(middleware.PanicMiddleware)
 	r.Use(middleware.MetricsMiddleware)
 	r.Use(middleware.LoggingMiddleware)
@@ -272,11 +273,10 @@ func dumpHeader(h http.Header) {
 // Gets the preferred outbound ip of this machine
 func getOutboundIP() string {
 	conn, err := net.Dial("udp", "8.8.8.8:80")
-	defer conn.Close()
-
 	if err != nil {
 		return ""
 	}
+	defer conn.Close()
 
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
 

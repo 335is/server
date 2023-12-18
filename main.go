@@ -21,6 +21,7 @@ type cfg struct {
 }
 
 // HTTP holds web server configuration
+//
 //	HTTP_ADDRESS
 //	HTTP_PORT
 //	HTTP_CONTENT
@@ -31,6 +32,7 @@ type http struct {
 }
 
 // CPU and Memory profiling settings
+//
 //	CPU_ENABLED
 //	CPU_FILENAME
 //	MEMORY_ENABLED
@@ -42,7 +44,7 @@ type profiling struct {
 
 const (
 	appName    = "server"
-	appVersion = "0.0.1"
+	appVersion = "0.0.2"
 )
 
 var (

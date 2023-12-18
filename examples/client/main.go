@@ -11,9 +11,11 @@ import (
 )
 
 const (
-	address string        = "http://localhost"
-	port    string        = ":2000"
-	delay   time.Duration = 10 * time.Millisecond
+	address    string        = "http://localhost"
+	port       string        = ":2000"
+	delay      time.Duration = 10 * time.Millisecond
+	apiKeyName               = "APIKey"
+	apiKey     string        = "SERVER-APIKEY-473b29ba-4ab3-46fa-bda1-9015444d70b5"
 )
 
 var ()
@@ -31,6 +33,7 @@ func main() {
 
 func makeCall(path string, delay time.Duration) {
 	req, err := http.NewRequest("GET", path, nil)
+	req.Header.Add(apiKeyName, apiKey)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
